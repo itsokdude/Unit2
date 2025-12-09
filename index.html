@@ -53,6 +53,13 @@
             background-size: 20px 20px;
             box-shadow: inset 0 0 20px rgba(0,0,0,0.2);
         }
+        
+        /* Remove arrows from number input */
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { 
+            -webkit-appearance: none; 
+            margin: 0; 
+        }
     </style>
 </head>
 <body>
@@ -88,6 +95,9 @@
         );
         const X = ({ size = 24, className }) => (
             <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        );
+        const Clock = ({ size = 24, className }) => (
+             <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
         );
 
         // --- CUSTOM ILLUSTRATIONS ---
@@ -368,6 +378,7 @@
 
         const DoodlePlant = () => <svg viewBox="0 0 40 40" className="w-full h-full"><path d="M20 40 L20 20" stroke="#4CAF50" strokeWidth="2"/><ellipse cx="15" cy="20" rx="5" ry="8" fill="#66BB6A" transform="rotate(-30 15 20)"/><ellipse cx="25" cy="20" rx="5" ry="8" fill="#66BB6A" transform="rotate(30 25 20)"/><rect x="15" y="30" width="10" height="10" fill="#E64A19"/></svg>;
 
+        // --- FINALER FUSSBALL: Geometrisch sauber ---
         const DoodleBall = () => (
             <svg viewBox="0 0 100 100" className="w-full h-full filter drop-shadow-md">
             <defs>
@@ -461,6 +472,7 @@
                 <path d="M10 40 L20 25 L30 40 Z" fill="#5c6bc0"/> {/* Mountain/Shape */}
             </svg>
         );
+
 
         const DoodleSwing = () => (
             <svg viewBox="0 0 80 80" className="w-full h-full">
@@ -943,7 +955,8 @@
 
         // SLIDE 5: YOUR TURN (TASK)
         const SlideTask = () => {
-        const [time, setTime] = useState(1200); 
+        const [initialMinutes, setInitialMinutes] = useState(20);
+        const [time, setTime] = useState(1200);
         const [isActive, setIsActive] = useState(false);
 
         useEffect(() => {
@@ -959,9 +972,17 @@
         }, [isActive, time]);
 
         const toggleTimer = () => setIsActive(!isActive);
+        
         const resetTimer = () => {
             setIsActive(false);
-            setTime(1200);
+            setTime(initialMinutes * 60);
+        };
+
+        const handleInputChange = (e) => {
+            const val = Math.max(1, parseInt(e.target.value) || 0); // Min 1 minute
+            setInitialMinutes(val);
+            setTime(val * 60);
+            setIsActive(false);
         };
 
         const formatTime = (seconds) => {
@@ -981,18 +1002,32 @@
                 <div className="flex items-center justify-center gap-6 bg-[#fff3e0] p-4 rounded-xl border-2 border-[#8b5e3c] w-fit mx-auto -mt-4 shadow-sm relative z-10">
                 
                 <div className="w-[60px] h-[80px]">
-                    <DoodleHourglass timeLeft={time} totalTime={1200} isActive={isActive} />
+                    <DoodleHourglass timeLeft={time} totalTime={initialMinutes * 60} isActive={isActive} />
                 </div>
 
                 <div className="flex flex-col items-center justify-center">
                     <span className="text-4xl font-bold font-mono text-[#5e3c23] min-w-[120px] text-center mb-2">{formatTime(time)}</span>
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 items-center">
                     <button onClick={toggleTimer} className="p-2 hover:bg-[#e6c9a8] rounded-full text-[#5e3c23] border border-[#5e3c23] bg-white">
                         {isActive ? <Pause size={24} fill="currentColor"/> : <Play size={24} fill="currentColor"/>}
                     </button>
                     <button onClick={resetTimer} className="p-2 hover:bg-[#e6c9a8] rounded-full text-[#5e3c23] border border-[#5e3c23] bg-white">
                         <RotateCcw size={24} />
                     </button>
+                    
+                    {!isActive && (
+                         <div className="flex items-center gap-1 ml-2 bg-white px-2 py-1 rounded border border-[#8b5e3c]">
+                            <Clock size={16} className="text-[#5e3c23]" />
+                            <input 
+                                type="number" 
+                                min="1" 
+                                value={initialMinutes} 
+                                onChange={handleInputChange}
+                                className="w-12 text-center font-bold text-[#5e3c23] outline-none bg-transparent"
+                            />
+                            <span className="text-xs font-bold text-[#5e3c23]">min</span>
+                         </div>
+                    )}
                     </div>
                 </div>
                 </div>
@@ -1010,10 +1045,6 @@
                     <p>Write the words next to the things.</p>
                     <p className="mt-2 text-lg text-gray-600 italic">("Beschrifte die Möbel: bed, desk...")</p>
                 </div>
-                </div>
-                <div className="text-center mt-4 bg-[#FFF9C4] p-4 rounded-xl border-2 border-[#FBC02D]">
-                <p className="font-heading font-bold text-2xl text-[#F57F17]">Homework:</p>
-                <p className="font-hand text-2xl">Write 3 sentences: <i>"In my room, there is a..."</i></p>
                 </div>
             </div>
             </div>
