@@ -975,14 +975,21 @@
         
         const resetTimer = () => {
             setIsActive(false);
-            setTime(initialMinutes * 60);
+            setTime((Number(initialMinutes) || 1) * 60); // Fallback if empty
         };
 
         const handleInputChange = (e) => {
-            const val = Math.max(1, parseInt(e.target.value) || 0); // Min 1 minute
-            setInitialMinutes(val);
-            setTime(val * 60);
-            setIsActive(false);
+            const val = e.target.value;
+            if (val === '') {
+                setInitialMinutes('');
+                return;
+            }
+            const num = parseInt(val);
+            if (!isNaN(num)) {
+                setInitialMinutes(num);
+                setTime(num * 60);
+                setIsActive(false);
+            }
         };
 
         const formatTime = (seconds) => {
@@ -1002,7 +1009,7 @@
                 <div className="flex items-center justify-center gap-6 bg-[#fff3e0] p-4 rounded-xl border-2 border-[#8b5e3c] w-fit mx-auto -mt-4 shadow-sm relative z-10">
                 
                 <div className="w-[60px] h-[80px]">
-                    <DoodleHourglass timeLeft={time} totalTime={initialMinutes * 60} isActive={isActive} />
+                    <DoodleHourglass timeLeft={time} totalTime={(Number(initialMinutes) || 1) * 60} isActive={isActive} />
                 </div>
 
                 <div className="flex flex-col items-center justify-center">
